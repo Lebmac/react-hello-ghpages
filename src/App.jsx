@@ -6,7 +6,26 @@ import './App.css'
 
 export default function App() {
   return (
-    <div style={{ padding: 24, maxWidth: 900, margin: "0 auto" }}>
+    <div id="canvas">
+      <div id="title">
+        <Header />
+      </div>
+      <div id="nav">
+        <Nav />
+      </div>
+      <div id="content">
+        <Routes>
+          <Route path="/" element={<BlogIndex />} />
+          <Route path="/post/:slug" element={<BlogPost />} />
+          <Route path="/admin" element={<Admin />} />
+        </Routes>
+      </div>
+    </div>
+  );
+}
+
+
+/*     <div style={{ padding: 24, maxWidth: 900, margin: "0 auto" }}>
       <header style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 24 }}>
         <Link to="/" style={{ textDecoration: "none" }}><strong>My Blog</strong></Link>
         <Link to="/admin">Admin</Link>
@@ -17,6 +36,4 @@ export default function App() {
         <Route path="/post/:slug" element={<BlogPost />} />
         <Route path="/admin" element={<Admin />} />
       </Routes>
-    </div>
-  );
-}
+    </div> */
