@@ -7,8 +7,10 @@ export default function Footer() {
   const date = new Date().getFullYear();
 
   return (
-  <footer>
-    <span>© {date > 2026 ? `2026–${date}` : 2026}{" "} Campbell Jamieson. All rights reserved.</span>
-  </footer>
+  <div id="foot">
+    <footer>
+      <span>© {date > 2026 ? `2026–${date}` : 2026}{" "} Campbell Jamieson. All rights reserved.</span>
+    </footer>
+  </div>
   );
 }

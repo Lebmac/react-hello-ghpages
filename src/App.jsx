@@ -3,22 +3,15 @@ import BlogIndex from "./pages/BlogIndex.jsx";
 import BlogPost from "./pages/BlogPost.jsx";
 import Admin from "./pages/Admin.jsx";
 import Title from "./components/Title.jsx";
+import Nav from "./components/Nav.jsx"
 import Footer from "./components/Footer.jsx";
-import CjLogo from './assets/logo.svg'
-import './App.css'
+import './App.css';
 
 export default function App() {
   return (
     <div id="canvas">
-      <div id="title">
-        <CjLogo />
-      </div>
-      <div id="nav">
-        <header style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 24 }}>
-          <Link to="/" style={{ textDecoration: "none" }}><strong>My Blog</strong></Link>
-          <Link to="/admin">Admin</Link>
-        </header>
-      </div>
+      <Title />
+      <Nav />
       <div id="page">
         <Routes>
           <Route path="/" element={<BlogIndex />} />
@@ -26,9 +19,7 @@ export default function App() {
           <Route path="/admin" element={<Admin />} />
         </Routes>
       </div>
-      <div id="foot">
-        <Footer />
-      </div>
+      <Footer />
     </div>
   );
 }
