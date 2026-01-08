@@ -2,23 +2,31 @@ import { Routes, Route, Link } from "react-router-dom";
 import BlogIndex from "./pages/BlogIndex.jsx";
 import BlogPost from "./pages/BlogPost.jsx";
 import Admin from "./pages/Admin.jsx";
+import Title from "./components/Title.jsx";
+import Footer from "./components/Footer.jsx";
 import './App.css'
 
 export default function App() {
   return (
     <div id="canvas">
       <div id="title">
-        <Header />
+        <Title />
       </div>
       <div id="nav">
-        <Nav />
+        <header style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 24 }}>
+          <Link to="/" style={{ textDecoration: "none" }}><strong>My Blog</strong></Link>
+          <Link to="/admin">Admin</Link>
+        </header>
       </div>
-      <div id="content">
+      <div id="page">
         <Routes>
           <Route path="/" element={<BlogIndex />} />
           <Route path="/post/:slug" element={<BlogPost />} />
           <Route path="/admin" element={<Admin />} />
         </Routes>
+      </div>
+      <div id="foot">
+        <Footer />
       </div>
     </div>
   );
