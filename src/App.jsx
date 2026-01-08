@@ -4,13 +4,14 @@ import BlogPost from "./pages/BlogPost.jsx";
 import Admin from "./pages/Admin.jsx";
 import Title from "./components/Title.jsx";
 import Footer from "./components/Footer.jsx";
+import CjLogo from './assets/logo.svg'
 import './App.css'
 
 export default function App() {
   return (
     <div id="canvas">
       <div id="title">
-        <Title />
+        <CjLogo />
       </div>
       <div id="nav">
         <header style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 24 }}>
