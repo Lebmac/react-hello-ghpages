@@ -1,4 +1,5 @@
 import { Routes, Route, Link } from "react-router-dom";
+import Gallery from "./pages/Gallery.jsx";
 import BlogIndex from "./pages/BlogIndex.jsx";
 import BlogPost from "./pages/BlogPost.jsx";
 import Admin from "./pages/Admin.jsx";
@@ -14,7 +15,7 @@ export default function App() {
       <Nav />
       <div id="page">
         <Routes>
-          <Route path="/" element={<BlogIndex />} />
+          <Route path="/" element={<Gallery />} />
           <Route path="/post/:slug" element={<BlogPost />} />
           <Route path="/admin" element={<Admin />} />
         </Routes>

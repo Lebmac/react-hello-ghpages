@@ -82,7 +82,33 @@
   grid-area: page;
   width: 100%;
   height: 100%;
-  background-color: blue;
+}
+
+#gallery {
+  display: flex;
+  gap: 0.5rem;
+
+  & .column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Each card must be treated as a single block inside a column */
+  .masonry-item {
+    break-inside: avoid;
+    margin: 0 0 16px;
+    width: 100%;
+  }
+
+  /* Make images fill their column width */
+  .masonry-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 12px;
+  }
 }
 
 #foot {
