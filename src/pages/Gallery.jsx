@@ -27,27 +27,31 @@ export default function Gallery({columns = 3}) {
   
   useEffect(() => {
     //console.log(imageURLs);
-    console.log("pre IF:", imgObjs);
+    //console.log("pre IF:", imgObjs);
     if (imgObjs.length < 15) {
 
       let imageObjects = [];
-      console.log("top up image db");
+      //console.log("top up image db");
 
       imageObjects = Object.entries(imageURLs).map(([path, url]) => {
         const name = path.split("/").pop();
         return { url, name };
       });
-
-      setImgObjs((prev) => {return prev.concat(imageObjects);});
+      console.log()
+      setImgObjs((prev) => {
+        const obj = prev.concat(imageObjects);
+        console.log(obj);
+        return obj
+      });
     }
-  },[imgObjs, ]);
+  },[imgObjs, seqStepN]);
 
   // S00: Wait for sensor in or above viewport -> S01
   useEffect(() => {
     const senseView = sensorRef.current;
     if (!senseView) { return; }
     if (seqStepN != 0) { return; }
-    console.log("step 0: monitoring sensor");
+    //console.log("step 0: monitoring sensor");
 
     const observer = new IntersectionObserver(([entry]) => {
       const inViewport = entry.isIntersecting;
@@ -64,7 +68,7 @@ export default function Gallery({columns = 3}) {
   // S01: Set smallest column -> S02
   useEffect(() => {
     if (seqStepN != 1) { return; }
-    console.log("step 1: find shortest column");
+    //console.log("step 1: find shortest column");
     let smallest = 0;
     colSizes.forEach((size, index) => {
       if (size < colSizes[smallest]) {
@@ -79,7 +83,7 @@ export default function Gallery({columns = 3}) {
   // S02: Add item to column -> S03
   useEffect(() => {
     if (seqStepN != 2) { return; }
-    console.log(`step 2: add item to ${colShort}`);
+    //console.log(`step 2: add item to ${colShort}`);
 
     const oldCols = colItems.map((col) => {return col.slice()});
 
@@ -100,7 +104,7 @@ export default function Gallery({columns = 3}) {
   // S03: Wait for card load complete -> COMPLETE
   useEffect(() => {
     if (seqStepN != 3) { return; }
-    console.log(`step 3: wait for card load completed`);    
+    //console.log(`step 3: wait for card load completed`);    
   },[seqStepN==3]);
 
   function updateChildStates(id, size) {   
