@@ -59,6 +59,9 @@ export default function Gallery({columns = 3}) {
       const sensorActive = inViewport || aboveViewport;
       //sensorActRef.current = sensorActive;
       if (sensorActive) { setSeqStepN(1); }
+    },
+    {
+      rootMargin: "400px 0px"
     });
 
     observer.observe(senseView);

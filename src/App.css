@@ -96,13 +96,11 @@
     gap: 0.5rem;
   }
 
-  /* Each card must be treated as a single block inside a column */
   & .item {
     break-inside: avoid;
     width: 100%;
   }
 
-  /* Make images fill their column width */
   & .item img {
     width: 100%;
     height: auto;
