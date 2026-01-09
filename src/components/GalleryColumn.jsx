@@ -1,41 +1,43 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import GalleryItem from "../components/GalleryItem.jsx";
+import { forwardRef, useImperativeHandle, useLayoutEffect, useRef, useState, useEffect } from "react";
+import GalleryItem from "./GalleryItem";
 
-export default function GalleryColumn(props) {
-  const sensor = useRef(null);
-  const [items, setItems] = useState([]);
+export default function GalleryColumn({id, items, updateParent}) {
+  const colRef = useRef(null);
+  const [colHeight, setColHeight] = useState(0);
+  const colID = id;
 
   useEffect(() => {
-    const observer = new IntersectionObserver((sensors) => {
-      const tripSensor = sensors[0];
-      if (tripSensor.isIntersecting) {
-        const newItem = props.getImage();
-        if (newItem == null) { return; }
-        setItems((collection) => [
-          ...collection, 
-          <GalleryItem key={collection.length} 
-                      src={newItem.url} 
-                      alt={newItem.name} 
-          />]
-        );
-      }
-    },
-    {
-      root: null,
-      delay: 200,
-      trackVisibility: true,
-      scrollMargin: "200px 0px"
-    });
-    
-    observer.observe(sensor.current);
+    itemAdded(colID);
+  },[]);
 
+  useEffect(() => {
+    const observer = new ResizeObserver(() => {
+      const height = colRef.current?.offsetHeight || colHeight;
+      
+      setColHeight(height);
+    });
+    observer.observe(colRef.current);
     return () => observer.disconnect();
-  }, [sensor.current]);
+  }, []);
+
+  function itemAdded(id) {
+    setTimeout(() => {
+      const height = colRef.current.offsetHeight;
+      //console.log("itemAdded:", colID, height);
+      updateParent(colID, height);
+    }, 50);
+  }
 
   return (
-    <div className="column">
-      {items.map((item) => {return item})}
-      <div ref={sensor} className="sensor"></div>
+    <div className="column" ref={colRef}>
+      {items.map((item, index) => (
+        <GalleryItem
+          key={index}
+          id={index}
+          item={item}
+          itemAdded={itemAdded}
+        />
+      ))}
     </div>
   );
-}
+};

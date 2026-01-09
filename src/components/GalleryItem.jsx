@@ -1,12 +1,11 @@
-export default function GalleryItem(props) {
+export default function GalleryItem({ id, item, itemAdded }) {
   return (
-    <article>
-      <img
-        src={props.src}
-        alt={props.alt}
-        loading="lazy"
-        style={{ width: "100%", objectFit: "cover" }}
-      />
-    </article>
+    <div className="item">
+      <img src={item?.url} 
+           alt={item?.name} 
+           loading="lazy" 
+           onLoad={() => {itemAdded(id)}}
+           onError={() => {itemAdded(id)}} />
+    </div>
   );
 }

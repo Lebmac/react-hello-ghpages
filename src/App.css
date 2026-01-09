@@ -85,8 +85,13 @@
 }
 
 #gallery {
+
+}
+
+#gallery-flex {
   display: flex;
   gap: 0.5rem;
+  align-items: flex-start;
 
   & .column {
     flex: 1;
@@ -96,18 +101,16 @@
   }
 
   /* Each card must be treated as a single block inside a column */
-  .masonry-item {
+  & .item {
     break-inside: avoid;
-    margin: 0 0 16px;
     width: 100%;
   }
 
   /* Make images fill their column width */
-  .masonry-item img {
+  & .item img {
     width: 100%;
     height: auto;
     display: block;
-    border-radius: 12px;
   }
 }
 
