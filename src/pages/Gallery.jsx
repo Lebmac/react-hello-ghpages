@@ -10,9 +10,11 @@ import GalleryColumn from "../components/GalleryColumn";
 
 
 // Build-time discovery of images
+// `query: '?url', import: 'default'`
 const imageURLs = import.meta.glob("../assets/gallery/*.{png,jpg,jpeg,webp,gif,svg}", {
   eager: true,
-  as: "url",
+  query: '?url', 
+  import: 'default',
 });
 
 export default function Gallery({columns = 3}) {
