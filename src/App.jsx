@@ -1,6 +1,7 @@
 import { Routes, Route, Link } from "react-router-dom";
 import Canvas from "./components/Canvas.jsx";
 import Gallery from "./pages/Gallery.jsx";
+import Challenge from "./pages/Challenge.jsx";
 import BlogIndex from "./pages/BlogIndex.jsx";
 import BlogPost from "./pages/BlogPost.jsx";
 import Admin from "./pages/Admin.jsx";
@@ -18,6 +19,7 @@ export default function App() {
       <div id="page">
         <Routes>
           <Route path="/" element={<Gallery />} />
+          <Route path="/challenge" element={<Challenge />} />
           <Route path="/post/:slug" element={<BlogPost />} />
           <Route path="/admin" element={<Admin />} />
         </Routes>

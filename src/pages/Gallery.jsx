@@ -37,10 +37,10 @@ export default function Gallery({columns = 3}) {
         const name = path.split("/").pop();
         return { url, name };
       });
-      console.log()
+
       setImgObjs((prev) => {
         const obj = prev.concat(imageObjects);
-        console.log(obj);
+        //console.log(obj);
         return obj
       });
     }
