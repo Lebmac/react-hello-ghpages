@@ -100,6 +100,7 @@ export default function Gallery({columns = 3}) {
       if (index != colShort) { newCols = [...newCols, col]; }
       else { 
         let imageObj = imgObjs.pop();
+        setImgObjs(imgObjs);
         console.log(index, imageObj.name);
         newCol =  [...col, imageObj];
         newCols = [...newCols, newCol];
