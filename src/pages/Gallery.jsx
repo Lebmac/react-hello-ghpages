@@ -29,6 +29,7 @@ export default function Gallery({columns = 3}) {
   useEffect(() => {
     //console.log(imageURLs);
     //console.log("pre IF:", imgObjs);
+    if (seqStepN == 2) { return; }
     if (imgObjs.length < 15) {
       let imageObjects = [];
       console.log("batching from glob");
