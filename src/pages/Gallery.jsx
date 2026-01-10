@@ -31,7 +31,7 @@ export default function Gallery({columns = 3}) {
     if (imgObjs.length < 15) {
 
       let imageObjects = [];
-      //console.log("top up image db");
+      console.log("batching from glob");
 
       imageObjects = Object.entries(imageURLs).map(([path, url]) => {
         const name = path.split("/").pop();
@@ -43,6 +43,7 @@ export default function Gallery({columns = 3}) {
         //console.log(obj);
         return obj
       });
+      console.log("batching complete");
     }
   },[imgObjs, seqStepN]);
 
@@ -96,6 +97,7 @@ export default function Gallery({columns = 3}) {
       if (index != colShort) { newCols = [...newCols, col]; }
       else { 
         let imageObj = imgObjs.pop();
+        console.log(index, imageObj.name);
         newCol =  [...col, imageObj];
         newCols = [...newCols, newCol];
       }

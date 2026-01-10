@@ -103,7 +103,7 @@ export default function CardChallenge({data}) {
       <Link to={`/challenge/${data.slug}`}>
         <div className="action">
           <span>READ MORE</span>
-          <img src={nextSymbol} alt="open post"/>
+          <span>🞂</span>
         </div>
       </Link>
     </li>
