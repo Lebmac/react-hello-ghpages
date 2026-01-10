@@ -11,7 +11,7 @@ import GalleryColumn from "../components/GalleryColumn";
 
 // Build-time discovery of images
 // `query: '?url', import: 'default'`
-const imageURLs = import.meta.glob("../assets/gallery/*.{png,jpg,jpeg,webp,gif,svg}", {
+const imageURLs = await import.meta.glob("../assets/gallery/*.{png,jpg,jpeg,webp,gif,svg}", {
   eager: true,
   query: '?url', 
   import: 'default',
@@ -40,7 +40,11 @@ export default function Gallery({columns = 3}) {
         const name = path.split("/").pop();
         return { url, name };
       });
-
+      
+      // POTENTIAL CAUSE FOR DUPLICATES IN DEPLOYED BUILD:
+      // Prev slower to update
+      // Tested by replacing prev here with imgObjs and
+      // saw same issue in dev as in deploy
       setImgObjs((prev) => {
         const obj = prev.concat(imageObjects);
         //console.log(obj);
