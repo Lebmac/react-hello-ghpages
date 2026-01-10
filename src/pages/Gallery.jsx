@@ -25,11 +25,13 @@ export default function Gallery({columns = 3}) {
   const [seqStepN, setSeqStepN] = useState(0);
   const [imgObjs, setImgObjs] = useState([]);
   
+  let batchingActive = false;
   useEffect(() => {
     //console.log(imageURLs);
     //console.log("pre IF:", imgObjs);
+    if (batchingActive) { return; }
     if (imgObjs.length < 15) {
-
+      batchingActive = true;
       let imageObjects = [];
       console.log("batching from glob");
 
@@ -44,6 +46,7 @@ export default function Gallery({columns = 3}) {
         return obj
       });
       console.log("batching complete");
+      batchingActive = false;
     }
   },[imgObjs, seqStepN]);
 
