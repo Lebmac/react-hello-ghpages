@@ -19,8 +19,9 @@
 }
 
 #canvas {
-  margin: 2rem;
+  padding: 2rem;
   min-height: 100%;
+  box-sizing: border-box;
   display: grid;
   grid-template: auto 1fr auto / auto  1fr;
   grid-template-areas: 
@@ -32,6 +33,7 @@
 
 #canvas-mobile {
   min-height: 100%;
+  box-sizing: border-box;
   display: grid;
   grid-template: auto 1fr auto / auto;
   grid-template-areas: 
@@ -50,6 +52,12 @@ h1, h2 {
   & span {
     font-size: 2.2rem;
   }
+}
+
+p {
+  font-weight: 200;
+  line-height: 1.6rem;
+  letter-spacing: 0.5px;
 }
 
 #title {
@@ -186,14 +194,15 @@ h1, h2 {
   }
 
   & h2 {
-    padding: 0.5rem 0 0.8rem 0;
+    padding: 0.8rem 0 1rem 0;
   }
 
   & p {
+    mask-image: linear-gradient(180deg, #000 70%, transparent);
     margin: 0;
     height: 150px;
     overflow: hidden;
-    text-overflow: ellipsis;
+    text-overflow:clip;
   }
 
   & .snippet {
@@ -212,6 +221,17 @@ h1, h2 {
     color: rgb(117, 118, 139);
     font-size: x-small;
   }
+
+  & .action {
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    
+  }
 }
 
 .card-challenge {
@@ -220,9 +240,9 @@ h1, h2 {
 }
 
 .snippet {
- background: #252c3d;
-background: linear-gradient(0deg, rgba(37, 44, 61, 1) 28%, rgba(3, 12, 15, 1) 99%);
-color: white;
+  background: #252c3d;
+  background: linear-gradient(0deg, rgba(37, 44, 61, 1) 28%, rgba(3, 12, 15, 1) 99%);
+  color: white;
   padding: 1rem;
   font-family: 'Courier New', Courier, monospace;
 

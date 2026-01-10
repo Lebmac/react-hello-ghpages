@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import htmr from 'htmr';
+import nextSymbol from "../assets/next.svg"
 
 export default function CardChallenge({data}) {
   
@@ -95,17 +96,16 @@ export default function CardChallenge({data}) {
       <div className="snippet">
         <pre className="snippet-text">{getSnippet()}</pre>
       </div>
-      <div>
-        
+      <div> 
         <h2>{data.title}</h2>
         <p>{data.design}</p>
-        <Link to={`/challenge/${data.slug}`}>
-          <div className="action">
-            <span>READ MORE</span>
-            <img />
-          </div>
-        </Link>
       </div>
+      <Link to={`/challenge/${data.slug}`}>
+        <div className="action">
+          <span>READ MORE</span>
+          <img src={nextSymbol} alt="open post"/>
+        </div>
+      </Link>
     </li>
   );
 }
