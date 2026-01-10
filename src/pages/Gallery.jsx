@@ -46,7 +46,7 @@ export default function Gallery({columns = 3}) {
       console.log("batching complete");
       setInitBtch(true);
     }
-  },[imgObjs]);
+  },[imgObjs, seqStepN]);
 
   // S00: Wait for sensor in or above viewport -> S01
   useEffect(() => {
