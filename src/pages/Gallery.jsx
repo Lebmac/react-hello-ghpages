@@ -29,7 +29,7 @@ export default function Gallery({columns = 3}) {
   useEffect(() => {
     //console.log(imageURLs);
     //console.log("pre IF:", imgObjs);
-    if (seqStepN == 2) { return; }
+    if (seqStepN != 0) { return; }
     if (imgObjs.length < 15) {
       let imageObjects = [];
       console.log("batching from glob");
@@ -47,7 +47,7 @@ export default function Gallery({columns = 3}) {
       console.log("batching complete");
       setInitBtch(true);
     }
-  },[imgObjs, seqStepN]);
+  },[imgObjs, seqStepN==0]);
 
   // S00: Wait for sensor in or above viewport -> S01
   useEffect(() => {
