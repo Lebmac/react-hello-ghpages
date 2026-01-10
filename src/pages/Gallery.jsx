@@ -24,14 +24,12 @@ export default function Gallery({columns = 3}) {
   const [colItems, setColItems] = useState(Array(colCount).fill([]));
   const [seqStepN, setSeqStepN] = useState(0);
   const [imgObjs, setImgObjs] = useState([]);
+  const [initBtch, setInitBtch] = useState(false);
   
-  let batchingActive = false;
   useEffect(() => {
     //console.log(imageURLs);
     //console.log("pre IF:", imgObjs);
-    if (batchingActive) { return; }
     if (imgObjs.length < 15) {
-      batchingActive = true;
       let imageObjects = [];
       console.log("batching from glob");
 
@@ -46,7 +44,7 @@ export default function Gallery({columns = 3}) {
         return obj
       });
       console.log("batching complete");
-      batchingActive = false;
+      setInitBtch(true);
     }
   },[imgObjs]);
 
@@ -55,6 +53,7 @@ export default function Gallery({columns = 3}) {
     const senseView = sensorRef.current;
     if (!senseView) { return; }
     if (seqStepN != 0) { return; }
+    if (!initBtch) { return; }
     //console.log("step 0: monitoring sensor");
 
     const observer = new IntersectionObserver(([entry]) => {
@@ -70,7 +69,7 @@ export default function Gallery({columns = 3}) {
 
     observer.observe(senseView);
     return () => observer.disconnect();
-  },[seqStepN==0]);
+  },[seqStepN==0, initBtch]);
 
   // S01: Set smallest column -> S02
   useEffect(() => {
