@@ -1,8 +1,7 @@
 #root {
   width: 100vw;
   min-height: 100%;
-  margin: 0 auto;
-  padding: 2rem;
+  margin: 0;
 }
 
 .logo {
@@ -20,6 +19,7 @@
 }
 
 #canvas {
+  margin: 2rem;
   min-height: 100%;
   display: grid;
   grid-template: auto 1fr auto / auto  1fr;
@@ -28,6 +28,17 @@
     "nav   page"
     "foot  foot";
   gap: 2rem;
+}
+
+#canvas-mobile {
+  min-height: 100%;
+  display: grid;
+  grid-template: auto 1fr auto / auto;
+  grid-template-areas: 
+    "nav"
+    "page"
+    "foot";
+  gap: 1rem;
 }
 
 #title {
@@ -75,6 +86,50 @@
 
   & hr {
     color: var(--text-colour);
+  }
+}
+
+#nav-bar {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+
+  & #permanent {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  & #nav-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  & a {
+    color: var(--text-colour-invert);
+    font-size: 1.2rem;
+    font-weight: 100;
+    padding: 0.5rem 0;
+  }
+
+  & button {
+    padding: 0;
+    font-size: 2.5rem;
+    align-items: start;
+    line-height: 2rem;
+    border: none;
+    outline: none;
+    background: none;
+    
+    &.open {
+      color: white;
+      
+    }
+
+    &.closed {
+      color: black;
+    }
   }
 }
 

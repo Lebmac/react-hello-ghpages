@@ -11,6 +11,7 @@
   box-sizing: border-box;
 
   --text-colour: black;
+  --text-colour-invert: white;
 }
 
 a {

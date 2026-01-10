@@ -1,12 +1,21 @@
-import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { supabase } from "../supabaseClient";
-import cjLogo from "../assets/logo.svg";
+import { useIsMobile } from '../hooks/useIsMobile';
+import Logo from "./Logo";
 
 export default function Title() {
- return (
- <div id="title">
-  <img src={cjLogo} alt="Campbell Jamieson Logo" />
-  <h1><span>C</span>AMPBELL <span>J</span>AMIESON</h1>
- </div>);
+  const { isMobile, isLoading } = useIsMobile();
+
+  function responsiveTitle() {
+    if (isMobile || isLoading) {
+      return <></>;
+    } else {
+      return (
+        <div id="title">
+          <Logo />
+          <h1><span>C</span>AMPBELL <span>J</span>AMIESON</h1>
+        </div>
+      );
+    }
+  }
+
+  return responsiveTitle();
 }
