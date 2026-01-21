@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import htmr from 'htmr';
 import Prism from "prismjs";
-import "prismjs/themes/prism.css";
+import "prismjs/themes/prism-dark.min.css";
 import "prismjs/components/prism-javascript";
 import "prismjs/components/prism-jsx";
 import "prismjs/components/prism-css";
