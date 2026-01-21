@@ -49,7 +49,6 @@ export default function Admin() {
   useEffect(() => {
     if (!session) return;
     loadPosts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
   async function loadPosts() {

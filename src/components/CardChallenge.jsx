@@ -1,8 +1,22 @@
 import { Link } from "react-router-dom";
 import htmr from 'htmr';
-import nextSymbol from "../assets/next.svg"
+import Prism from "prismjs";
+import "prismjs/themes/prism.css";
+import "prismjs/components/prism-javascript";
+import "prismjs/components/prism-jsx";
+import "prismjs/components/prism-css";
+import "prismjs/components/prism-json";
+
+
 
 export default function CardChallenge({data}) {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (ref.current) {
+      Prism.highlightElement(ref.current);
+    }
+  }, [data.code, "language-javascript"]);
   
   function getSnippet() {
     let snippet = data.code;
@@ -94,7 +108,7 @@ export default function CardChallenge({data}) {
     <li className="card-challenge">
       <span className="date">Published: {getPublishDate()}</span>
       <div className="snippet">
-        <pre className="snippet-text">{getSnippet()}</pre>
+        <pre className="snippet-text"><code ref={ref} className="language-javascript">{data.code}</code></pre>
       </div>
       <div> 
         <h2>{data.title}</h2>
