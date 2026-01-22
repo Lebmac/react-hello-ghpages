@@ -20,6 +20,9 @@ const imageURLs = await import.meta.glob("../assets/gallery/*.{png,jpg,jpeg,webp
 export default function Gallery({columns = 3}) {
   const sensorRef = useRef(null);
   const sensorActRef = useRef(null);
+  const imgQueueRef = useRef([]);
+  const imgAllRef = useRef([]);
+
   const [colCount, setColCount] = useState(columns);
   const [colShort, setColShort] = useState(0);
   const [colSizes, setColSizes] = useState(Array(colCount).fill(0));
@@ -28,32 +31,20 @@ export default function Gallery({columns = 3}) {
   const [imgObjs, setImgObjs] = useState([]);
   const [initBtch, setInitBtch] = useState(false);
   
+  // Init gallery full and gallery current cycle.
+  // queue will be popped until empty, then refilled from all.
   useEffect(() => {
-    //console.log(imageURLs);
-    //console.log("pre IF:", imgObjs);
-    if (seqStepN != 0) { return; }
-    if (imgObjs.length < 15) {
-      let imageObjects = [];
-      console.log("batching from glob");
+    if (imgAllRef.current.length) return;
 
-      imageObjects = Object.entries(imageURLs).map(([path, url]) => {
-        const name = path.split("/").pop();
-        return { url, name };
-      });
-      
-      // POTENTIAL CAUSE FOR DUPLICATES IN DEPLOYED BUILD:
-      // Prev slower to update
-      // Tested by replacing prev here with imgObjs and
-      // saw same issue in dev as in deploy
-      setImgObjs((prev) => {
-        const obj = prev.concat(imageObjects);
-        //console.log(obj);
-        return obj
-      });
-      console.log("batching complete");
-      setInitBtch(true);
-    }
-  },[imgObjs, seqStepN==0]);
+    const all = Object.entries(imageURLs).map(([path, url]) => ({
+      url,
+      name: path.split("/").pop(),
+    }));
+
+    imgAllRef.current = all;
+    imgQueueRef.current = all.slice(); 
+    setInitBtch(true);
+  }, []);
 
   // S00: Wait for sensor in or above viewport -> S01
   useEffect(() => {
@@ -95,26 +86,30 @@ export default function Gallery({columns = 3}) {
 
   // S02: Add item to column -> S03
   useEffect(() => {
-    if (seqStepN != 2) { return; }
-    //console.log(`step 2: add item to ${colShort}`);
+    if (seqStepN !== 2) return;
 
-    const oldCols = colItems.map((col) => {return col.slice()});
+    // refill queue from all if empty
+    if (imgQueueRef.current.length === 0) {
+      imgQueueRef.current = imgAllRef.current.slice();
+    }
 
-    let newCols = [];
-    let newCol = [];
-    oldCols.forEach((col, index) => {
-      if (index != colShort) { newCols = [...newCols, col]; }
-      else { 
-        let imageObj = imgObjs.pop();
-        setImgObjs(imgObjs);
-        console.log(index, imageObj.name);
-        newCol =  [...col, imageObj];
-        newCols = [...newCols, newCol];
-      }
+
+    const imageObj = imgQueueRef.current.pop();
+    if (!imageObj) {
+      setSeqStepN(0);
+      return;
+    }
+
+    setColItems((oldCols) => {
+      const nextCols = oldCols.map((col) => col.slice());
+      nextCols[colShort].push(imageObj);
+      return nextCols;
     });
-    setColItems(newCols);
+
+    console.log(colShort, imageObj.name);
     setSeqStepN(3);
-  },[seqStepN==2]);
+  }, [seqStepN, colShort]);
+
 
   // S03: Wait for card load complete -> COMPLETE
   useEffect(() => {
@@ -134,6 +129,7 @@ export default function Gallery({columns = 3}) {
     });
     setSeqStepN(0);
   }
+
 
   return (
     <div id="gallery">
