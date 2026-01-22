@@ -1,13 +1,256 @@
+import { useEffect, useMemo, useState } from "react";
+import { supabase } from "../supabaseClient";
 import { useAuth } from "./Admin";
+
+function slugify(input) {
+  return String(input || "")
+    .trim()
+    .toLowerCase()
+    .replace(/['"]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
 
 export default function AdminChallenge() {
   const { session, user, signOut } = useAuth();
 
-  return (
-    <div id="admin-challenge">
-      <p>User ID: {user?.id}</p>
-      <button onClick={signOut}>Sign out</button>
-      {/* use session access token if needed: session?.access_token */}
-    </div>
+  // posts
+  const [posts, setPosts] = useState([]);
+  const [activeId, setActiveId] = useState(null);
+
+  // editor
+  const [visible, setVisible] = useState(false);
+  const [title, setTitle] = useState("");
+  const [slug, setSlug] = useState("");
+  const [source, setSource] = useState("");
+  const [scope, setScope] = useState("");
+  const [code, setCode] = useState("");
+  const [design, setDesign] = useState("");
+  const [featured, setFeatured] = useState("");
+  const [published, setPublished] = useState(false);
+
+  // messages and loading
+  const [msg, setMsg] = useState("");
+  const [err, setErr] = useState("");
+  const [loadingPosts, setLoadingPosts] = useState(false);
+
+  const isEditing = useMemo(() => Boolean(activeId), [activeId]);
+
+
+  useEffect(() => {
+    if (!session) return;
+    loadPosts();
+  }, [session]);
+
+  async function loadPosts() {
+    setLoadingPosts(true);
+    setErr("");
+    setMsg("");
+
+    const { data, error } = await supabase
+      .from("challenge")
+      .select("id,title,slug,source,scope,code,design,featured,published,published_at,updated_at,author_id")
+      .order("updated_at", { ascending: false });
+
+    if (error) setErr(error.message);
+    else setPosts(data ?? []);
+
+    setLoadingPosts(false);
+  }
+
+  function resetEditor() {
+    setActiveId(null);
+    setTitle("");
+    setSlug("");
+    setSource("");
+    setScope("");
+    setCode("");
+    setDesign("");
+    setFeatured("");
+    setPublished("");
+  }
+
+  function startNew() {
+    resetEditor();
+    setMsg("New post");
+    setVisible(true);
+  }
+
+  function startEdit(post) {
+    setActiveId(post.id);
+    setTitle(post.title ?? "");
+    setSlug(post.slug ?? "");
+    setPublished(Boolean(post.published));
+    fetchContent(post.id);
+    setVisible(true);
+  }
+
+  async function fetchContent(id) {
+    setErr("");
+    const { data, error } = await supabase
+      .from("challenge")
+      .select("id,title,slug,source,scope,code,design,featured,published,published_at,updated_at,author_id")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (error) setErr(error.message);
+    else {
+      setSource(data?.source ?? "");
+      setScope(data?.scope ?? "");
+      setCode(data?.code ?? "");
+      setDesign(data?.design ?? "");
+      setFeatured(Boolean(data?.featured));
+    }
+  }
+
+
+  async function savePost() {
+    setErr("");
+    setMsg("");
+
+    const finalTitle = title.trim();
+    const finalSlug = (slug.trim() || slugify(finalTitle)).slice(0, 120);
+
+    if (!finalTitle) return setErr("Title is required.");
+    if (!finalSlug) return setErr("Slug is required.");
+
+    const payload = {
+      title: finalTitle,
+      slug: finalSlug,
+      source: source ?? "",
+      scope: scope ?? "",
+      code: code ?? "",
+      design: design ?? "",
+      featured: Boolean(featured),
+      published: Boolean(published),
+      published_at: published ? new Date().toISOString() : null,
+      updated_at: new Date().toISOString(),
+    };
+
+    if (!isEditing) {
+      const { error } = await supabase.from("challenge").insert([payload]);
+      if (error) return setErr(error.message);
+      setMsg("Created.");
+    } else {
+      const { error } = await supabase.from("challenge").update(payload).eq("id", activeId);
+      if (error) return setErr(error.message);
+      setMsg("Saved.");
+    }
+
+    await loadPosts();
+    resetEditor();
+    setVisible(false);
+  }
+
+  async function deletePost(id) {
+    if (!confirm("Delete this post?")) return;
+    setErr("");
+    setMsg("");
+
+    const { error } = await supabase.from("challenge").delete().eq("id", id);
+    if (error) return setErr(error.message);
+
+    setMsg("Deleted.");
+    await loadPosts();
+    if (activeId === id) resetEditor();
+  }
+
+  async function togglePublished(post) {
+    setErr("");
+    setMsg("");
+
+    const next = !post.published;
+    const { error } = await supabase
+      .from("challenge")
+      .update({
+        published: next,
+        published_at: next ? new Date().toISOString() : null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", post.id);
+
+    if (error) return setErr(error.message);
+
+    await loadPosts();
+  }
+
+ return (
+    <>
+      <div className="controls">
+        {err && <p className="msg" style={{ color: "red" }}>Error: {err}</p>}
+        <button className="newbtn" onClick={startNew}>＋</button>
+        <button className="refreshbtn" onClick={loadPosts} disabled={loadingPosts}>↺</button>
+      </div>
+
+      {visible || (
+      <ul className="challenge-list">
+        {posts.map((p) => (
+          <li key={p.id}>
+            <h3 className="title">{p.title}</h3>
+            <div className="controls">
+              <button onClick={() => startEdit(p)}>✎<span className="tooltiptext">Some tooltip text</span></button>
+              <button onClick={() => togglePublished(p)}>{p.published ? "⇏" : "⇒"}<span className="tooltiptext">Some tooltip text</span></button>
+              <button onClick={() => deletePost(p.id)} className="danger">🗑<span className="tooltiptext">Some tooltip text</span></button>
+            </div>
+            <div style={{ fontSize: 12, opacity: 0.7 }}>
+              /challenge/{p.slug} — {p.published ? "Published" : "Draft"} — updated{" "}
+              {p.updated_at ? new Date(p.updated_at).toLocaleString() : ""}
+            </div>
+          </li>
+        ))}
+      </ul>
+      )}
+
+      {visible && (
+      <div className="editor">
+        <h2>{isEditing ? "Edit post" : "New post"}</h2>
+        <label>
+          Title
+          <input
+            value={title}
+            onChange={(e) => {
+              setTitle(e.target.value);
+              if (!slug.trim()) setSlug(slugify(e.target.value));
+            }}
+            style={{ width: "100%", padding: 8 }}
+          />
+        </label>
+
+        <label style={{ display: "none" }}>
+          Slug
+          <input
+            value={slug}
+            onChange={(e) => setSlug(e.target.value)}
+            placeholder="auto-generated from title if blank"
+            style={{ width: "100%", padding: 8 }}
+          />
+        </label>
+
+        <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <input
+            type="checkbox"
+            checked={published}
+            onChange={(e) => setPublished(e.target.checked)}
+          />
+          Published
+        </label>
+
+        <label>
+          Content
+          <textarea
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            rows={12}
+            style={{ width: "100%", padding: 8, fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}
+          />
+        </label>
+
+        <div style={{ display: "flex", gap: 10 }}>
+          <button onClick={savePost}>{isEditing ? "Save" : "Create"}</button>
+          <button onClick={() => {resetEditor(); setVisible(false);}} type="button">Cancel</button>
+        </div>
+      </div>
+      )}
+    </>
   );
 }

@@ -88,7 +88,6 @@ export default function Admin() {
     );
   }
 
-  // --- UI: logged in, show dashboard ---
   return (
     <AuthContext.Provider value={auth}>
       <div id="admin">
