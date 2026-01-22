@@ -49,7 +49,6 @@ export function Tabs({ children, defaultValue }) {
           role="tabpanel"
           aria-labelledby={`tab-${tabValue}`}
           tabIndex={0}
-          style={{ padding: 4 }}
         >
           {activeTab.props.children}
         </div>

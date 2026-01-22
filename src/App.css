@@ -176,8 +176,10 @@ p {
 }
 
 #challenge {
-
   & .list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
     list-style: none;
     padding: 0;
     margin: 0;
@@ -200,7 +202,7 @@ p {
   & p {
     mask-image: linear-gradient(180deg, #000 70%, transparent);
     margin: 0;
-    height: 150px;
+    max-height: 150px;
     overflow: hidden;
     text-overflow:clip;
   }
@@ -479,6 +481,36 @@ p {
 
     & .details {
       grid-area: details;
+    }
+  }
+
+  & .editor {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    & * {
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      resize: vertical;
+      width: 100%;
+    }
+
+    & label:has(input[type="checkbox"]) {
+      width: max-content;
+      flex-direction: row;
+      gap: 0.5rem;
+
+      & * {
+        width: max-content;
+      }
+    }
+
+    & .editor-controls {
+      display: flex;
+      flex-direction: row;
+      gap: 1rem;
     }
   }
 }

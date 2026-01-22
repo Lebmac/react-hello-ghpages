@@ -182,6 +182,7 @@ export default function AdminChallenge() {
         <button className="refreshbtn" onClick={loadPosts} disabled={loadingPosts}>↺</button>
       </div>
 
+      {/* list all challenge posts */}
       {visible || (
       <ul className="challenge-list">
         {posts.map((p) => (
@@ -201,32 +202,69 @@ export default function AdminChallenge() {
       </ul>
       )}
 
+      {/* display editor */}
       {visible && (
       <div className="editor">
         <h2>{isEditing ? "Edit post" : "New post"}</h2>
+
         <label>
           Title
           <input
             value={title}
             onChange={(e) => {
               setTitle(e.target.value);
-              if (!slug.trim()) setSlug(slugify(e.target.value));
+              setSlug(slugify(e.target.value));
             }}
-            style={{ width: "100%", padding: 8 }}
           />
         </label>
 
-        <label style={{ display: "none" }}>
-          Slug
+        <label>
+          Source
           <input
-            value={slug}
-            onChange={(e) => setSlug(e.target.value)}
-            placeholder="auto-generated from title if blank"
-            style={{ width: "100%", padding: 8 }}
+            value={source}
+            onChange={(e) => {
+              setSource(e.target.value);
+            }}
           />
         </label>
 
-        <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <label>
+          Scope
+          <textarea
+            value={scope}
+            onChange={(e) => setScope(e.target.value)}
+            rows={8}
+          />
+        </label>
+
+        <label>
+          Code
+          <textarea
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            rows={8}
+          />
+        </label>
+
+        <label>
+          Design
+          <textarea
+            value={design}
+            onChange={(e) => setDesign(e.target.value)}
+            rows={8}
+          />
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            checked={featured}
+            onChange={(e) => setFeatured(e.target.checked)}
+          />
+          Featured Post
+        </label>
+
+        <label>
           <input
             type="checkbox"
             checked={published}
@@ -235,17 +273,7 @@ export default function AdminChallenge() {
           Published
         </label>
 
-        <label>
-          Content
-          <textarea
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            rows={12}
-            style={{ width: "100%", padding: 8, fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}
-          />
-        </label>
-
-        <div style={{ display: "flex", gap: 10 }}>
+        <div className="editor-controls">
           <button onClick={savePost}>{isEditing ? "Save" : "Create"}</button>
           <button onClick={() => {resetEditor(); setVisible(false);}} type="button">Cancel</button>
         </div>
