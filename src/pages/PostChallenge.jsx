@@ -15,8 +15,9 @@ export default function PostChallenge() {
   const [post, setPost] = useState(null);
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(true);
-  const ref = useRef(null);
-  const refBody = useRef(null);
+  const [tabNo, setTabNo] = useState(true);
+  const refCodeTitle = useRef(null);
+  const refCodeBody = useRef(null);
   const refDesign = useRef(null);
   const refScope = useRef(null);
 
@@ -51,30 +52,25 @@ export default function PostChallenge() {
   }, [slug]);
 
   useEffect(() => {
-    if (ref.current) {
-      Prism.highlightElement(ref.current);
-    }
-    if (refBody.current) {
-      Prism.highlightElement(refBody.current);
-    }
-  }, [post?.code, "language-javascript"]);
-
-  useEffect(() => {
     console.log("reffing");
+    if (refCodeTitle.current) {
+      Prism.highlightElement(refCodeTitle.current);
+    }
+    if (refCodeBody.current) {
+      Prism.highlightElement(refCodeBody.current);
+    }
     if (refDesign.current) {
       refDesign.current.innerHTML = marked.parse(post?.design || "");
     }
     if (refScope.current) {
       refScope.current.innerHTML = marked.parse(post?.scope || "");
     }
-    if (refBody.current) {
-      Prism.highlightElement(refBody.current);
-    }
-  }, [post?.design, post?.scope,]);
+  }, [post?.code, "language-javascript", tabNo]);
 
-  if (loading) return <p>Loading…</p>;
-  if (err) return <p style={{ color: "crimson" }}>Error: {err}</p>;
-  if (!post) return <p>Not found.</p>;
+  function setTab(arg) {
+    setTabNo(arg);
+    console.log(arg);
+  }
 
   function toOpenCurl(code) {
     const curl = code.indexOf("{") + 1;
@@ -110,13 +106,17 @@ export default function PostChallenge() {
     return lets[Math.floor(Math.random() * lets.length)];
   }
 
+  if (loading) return <p>Loading…</p>;
+  if (err) return <p style={{ color: "crimson" }}>Error: {err}</p>;
+  if (!post) return <p>Not found.</p>;
+
   return (
     <div id="challenge-detail">
       <div className="snippet hero-img">
-        <pre><code ref={ref} className="language-javascript">{toOpenCurl(post.code)}</code></pre>
+        <pre><code ref={refCodeTitle} className="language-javascript">{toOpenCurl(post.code)}</code></pre>
       </div>
 
-      <Tabs defaultValue="scope">
+      <Tabs defaultValue="scope" setTab={setTab}>
         <Tab value="scope" label="Scope">
           <div className="challenge-scope">
             <h2>Scope</h2>
@@ -134,7 +134,7 @@ export default function PostChallenge() {
             <h2>Function</h2>
             <div className="snippet hero-img">
               <pre>
-                <code ref={refBody} className="language-javascript">{post.code}</code>
+                <code ref={refCodeBody} className="language-javascript">{post.code}</code>
               </pre>
             </div>
           </div>

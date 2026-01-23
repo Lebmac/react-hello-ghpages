@@ -9,14 +9,17 @@ import React, { useId, useMemo, useState } from "react";
  * </Tabs>
  */
 
-export function Tabs({ children, defaultValue }) {
+export function Tabs({ children, defaultValue, setTab }) {
   const tabs = React.Children.toArray(children).filter(Boolean);
   const [tabValue, setTabValue] = useState(defaultValue ?? tabs[0].props.value);
   const activeTab = tabs.find((t) => t.props.value === tabValue);
 
   const setActive = (next) => {
+    
+    setTab(next);
     if (!next) return;
     else setTabValue(next);
+    
   };
 
   return (
