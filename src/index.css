@@ -10,14 +10,14 @@
 
   box-sizing: border-box;
   overflow: auto;
-  scrollbar-gutter: stable both-edges;
+  scrollbar-gutter: stable;
 
   --text-colour: black;
   --text-colour-invert: white;
 }
 
 a {
-  font-weight: 500;
+  font-weight: 200;
   color: var(--text-colour);
   text-decoration: inherit;
 }
@@ -63,6 +63,11 @@ button:hover {
   background-color: white;
   color: black; 
 
+}
+
+code {
+  overflow-x: hidden;
+  overflow-wrap: break-word;
 }
 
 @media (prefers-color-scheme: light) {

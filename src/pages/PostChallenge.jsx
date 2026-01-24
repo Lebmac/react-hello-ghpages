@@ -8,24 +8,24 @@ import "prismjs/components/prism-javascript";
 import "prismjs/components/prism-jsx";
 import "prismjs/components/prism-css";
 import "prismjs/components/prism-json";
-import { Tabs, Tab } from "../components/Tabs";
+import { Tabs, Tab } from "../components/Tabs"; 
+
 
 export default function PostChallenge() {
   const { slug } = useParams();
   const [post, setPost] = useState(null);
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(true);
-  const [tabNo, setTabNo] = useState(true);
-/*   const [markdown, setMarkdown] = useState();
-  const [contents, setContents] = useState(); */
+  const [prevPost, setPrev] = useState(null);
+  const [nextPost, setNext] = useState(null);
+  const [tabNo, setTabNo] = useState("scope");
   const refCodeTitle = useRef(null);
   const refCodeBody = useRef(null);
   const refDesign = useRef(null);
   const refScope = useRef(null);
-
-
   const renderer = new marked.Renderer();
 
+  // define headers with id for markdown rendering
   renderer.heading = function (text) {
     const id = slugify(text.text);
     return `<h${text.depth} id="${id}">${text.text}</h${text.depth}>`;
@@ -36,15 +36,17 @@ export default function PostChallenge() {
     if (tabNo === "design") return post.design || "";
     if (tabNo === "scope") return post.scope || "";
     return "";
-  }, [post, tabNo]);
+  }, [post?.scope, tabNo]);
 
   const contents = useMemo(() => extractHeadings(markdown), [markdown]);
 
+  // select blog post from supabase table
   useEffect(() => {
     let cancelled = false;
 
     async function load() {
       setLoading(true);
+      setTabNo("scope");
       setErr("");
 
       const { data, error } = await supabase
@@ -68,41 +70,51 @@ export default function PostChallenge() {
     return () => { cancelled = true; };
   }, [slug]);
 
-useEffect(() => {
-  marked.setOptions({ renderer });
+  // render markdown to html
+  useEffect(() => {
+    marked.setOptions({ renderer });
 
-  if (tabNo === "design" && refDesign.current) {
-    refDesign.current.innerHTML = marked.parse(markdown);
-  }
-  if (tabNo === "scope" && refScope.current) {
-    refScope.current.innerHTML = marked.parse(markdown);
-  }
-}, [markdown, tabNo]);
+    if (tabNo === "design" && refDesign.current) {
+      refDesign.current.innerHTML = marked.parse(markdown);
+    }
+    if (tabNo === "scope" && refScope.current) {
+      refScope.current.innerHTML = marked.parse(markdown);
+    }
+  }, [markdown, tabNo, refScope.current, prevPost, nextPost]);
 
+  // render code blocks
   useLayoutEffect(() => {
     const raf = requestAnimationFrame(() => {
       if (refCodeTitle.current) Prism.highlightElement(refCodeTitle.current);
       if (tabNo === "code" && refCodeBody.current) Prism.highlightElement(refCodeBody.current);
     });
-
     return () => cancelAnimationFrame(raf);
-  }, [post?.code, tabNo]);
+  }, [post, tabNo, prevPost, nextPost]);
+
+  // set next and previous links
+  useEffect(() => {
+    console.log("getting");
+    getNeighbouringPosts();
+  },[post])
 
   // callback for Tabs to pass current tab to parent
   function setTab(arg) {
     setTabNo(arg);
   }
 
+  // Writes pseudo code for hero content
   function toOpenCurl(code) {
     const curl = code.indexOf("{") + 1;
     return code.slice(0, curl).trim() + 
-      `\n    //-- PROVIDER:  freeCodeCamp(🔥) daily_coding_challenge   
+      `
+    //-- PROVIDER:  freeCodeCamp(🔥) daily_coding_challenge   
     //-- HEADER:    ${post.title}
     //-- DEPLOYED:  ${post.published_at}
-    //-- AUTHOR:    ${post.author_id?.display_name} \n
+    //-- AUTHOR:    ${post.author_id?.display_name}\n
     ${post?.slang || randomLet()}\n}`;
   }
 
+  // Get random "let something = something funny" for hero content
   function randomLet() {
     const lets = [
       "let pleaseWork = true;",
@@ -128,6 +140,7 @@ useEffect(() => {
     return lets[Math.floor(Math.random() * lets.length)];
   }
 
+  // extract headings from markdown for conversion into contents page
   function extractHeadings(markdown) {
     if(!markdown) return [];
     const tokens = marked.lexer(markdown);
@@ -140,7 +153,8 @@ useEffect(() => {
       }));
   }
 
-
+  // convert header text into valid id string for markdown headings
+  // contents page uses heading id's for navigation
   function slugify(text) {
     if (!text) return;
     return text
@@ -148,6 +162,29 @@ useEffect(() => {
       .trim()
       .replace(/[^\w\s-]/g, "")
       .replace(/\s+/g, "-");
+  }
+
+  async function getNeighbouringPosts() {
+    const { data: next } = await supabase
+      .from("challenge")
+      .select("id, slug, title")
+      .eq("published", true)
+      .gt("published_at", post.published_at)
+      .order("published_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    const { data: prev } = await supabase
+      .from("challenge")
+      .select("id, slug, title")
+      .eq("published", true)
+      .lt("published_at", post.published_at)
+      .order("published_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    setNext(next);
+    setPrev(prev);
   }
 
   if (loading) return <p>Loading…</p>;
@@ -169,13 +206,14 @@ useEffect(() => {
           </div>
         </Tab>
         <Tab value="design" label="Design">
-          <article className="challenge-design">
+          <div className="challenge-design">
+            <h2>Design Approach</h2>
             <div ref={refDesign}>{post.design}</div>
-          </article>
+          </div>
         </Tab>
         <Tab value="code" label="Code">
           <div className="challenge-code">
-            <div className="snippet hero-img">
+            <div className="snippet">
               <pre>
                 <code ref={refCodeBody} className="language-javascript">{post.code}</code>
               </pre>
@@ -186,13 +224,25 @@ useEffect(() => {
 
       <div className="challenge-rail">
         <h2>Contents</h2>
-          <ul>
-            {Array.isArray(contents) && contents.map(h => (
-              <li key={h.id} className={`level-${h.level}`}>
-                <a href={`#${h.id}`}>{h.text}</a>
-              </li>
-            ))}
-          </ul>
+        {(contents?.length > 0 && <ol>
+          {Array.isArray(contents) && contents.map(h => (
+            <li key={h.id} className={`level-${h.level}`}>
+              <a href={`#${h.id}`}>{h.text}</a>
+            </li>
+          ))}
+        </ol>) || <ol>empty</ol> }
+        <p>See more posts</p>
+        <div className="rail-controls">
+          {prevPost && (<Link to={`/challenge/${prevPost?.slug}`}>
+            <p>← prev</p>
+          </Link>) || <p>⨯ prev</p>}
+          <Link to="/challenge">
+            <p>main</p>
+          </Link>
+          {nextPost && (<Link to={`/challenge/${nextPost?.slug}`}>
+            <p>next →</p>
+          </Link>) || <p>next ⨯</p>}
+        </div>
       </div>
     </div>
   );
