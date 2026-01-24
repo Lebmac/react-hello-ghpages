@@ -14,12 +14,10 @@ export function Tabs({ children, defaultValue, setTab }) {
   const [tabValue, setTabValue] = useState(defaultValue ?? tabs[0].props.value);
   const activeTab = tabs.find((t) => t.props.value === tabValue);
 
-  const setActive = (next) => {
-    
-    setTab(next);
+  const setActive = (next) => { 
     if (!next) return;
     else setTabValue(next);
-    
+    if (setTab) setTab(next);
   };
 
   return (

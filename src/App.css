@@ -268,13 +268,10 @@ p, ul, li, ol {
   min-height: 100%;
   grid-template-areas:
     "hero hero"
-    "tabs tabs"
-    "scope scope"
-    "design design"
-    "code code"
-    "controls controls";
-  grid-template-columns: 1fr 1fr;
+    "tabs rail";
+  grid-template-columns: 1fr max-content;
   grid-template-rows: min-content;
+  column-gap: 2rem;
 
 
   & .hero-img {
@@ -314,11 +311,15 @@ p, ul, li, ol {
 
   & .tabs {
     grid-area: tabs;
+
+    & .tab-list {
+      border: none;
+    }
   }
 
   & .challenge-scope {
     grid-area: scope;
-    padding: 0 1.5rem;
+    padding: 0;
     background-color: white;
   }
 
@@ -336,17 +337,26 @@ p, ul, li, ol {
     background-color: white;
   }
 
-  & .challenge-design > * {
+  & .challenge-design > *,
+  & .challenge-rail > * {
     margin: 0;
     line-height: normal;
   }
 
-  &.challenge-design > * + * {
+  &.challenge-design > * + *,
+  &.challenge-rail > * + * {
     margin-top: 0.75rem;
   }
 
-  & .design {
-
+  &  .challenge-rail {
+    grid-area: rail;
+    width: clamp(220px, 10svw, 250px);
+    height: 100%;
+    box-sizing: border-box;
+    margin: 2.5rem 0.1rem 0 0;
+    padding: 0 0.75rem;
+    background-color: white;
+    filter: drop-shadow(0px 0px 3px rgba(0,0,0,0.5));
   }
 
   & h3 {

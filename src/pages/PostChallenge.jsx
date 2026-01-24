@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import Prism from "prismjs";
@@ -16,10 +16,29 @@ export default function PostChallenge() {
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(true);
   const [tabNo, setTabNo] = useState(true);
+/*   const [markdown, setMarkdown] = useState();
+  const [contents, setContents] = useState(); */
   const refCodeTitle = useRef(null);
   const refCodeBody = useRef(null);
   const refDesign = useRef(null);
   const refScope = useRef(null);
+
+
+  const renderer = new marked.Renderer();
+
+  renderer.heading = function (text) {
+    const id = slugify(text.text);
+    return `<h${text.depth} id="${id}">${text.text}</h${text.depth}>`;
+  };
+
+  const markdown = useMemo(() => {
+    if (!post) return "";
+    if (tabNo === "design") return post.design || "";
+    if (tabNo === "scope") return post.scope || "";
+    return "";
+  }, [post, tabNo]);
+
+  const contents = useMemo(() => extractHeadings(markdown), [markdown]);
 
   useEffect(() => {
     let cancelled = false;
@@ -35,8 +54,6 @@ export default function PostChallenge() {
         .eq("published", true)
         .maybeSingle();
 
-
-      console.log(data);
       if (cancelled) return;
 
       if (error) setErr(error.message);
@@ -51,25 +68,29 @@ export default function PostChallenge() {
     return () => { cancelled = true; };
   }, [slug]);
 
-  useEffect(() => {
-    console.log("reffing");
-    if (refCodeTitle.current) {
-      Prism.highlightElement(refCodeTitle.current);
-    }
-    if (refCodeBody.current) {
-      Prism.highlightElement(refCodeBody.current);
-    }
-    if (refDesign.current) {
-      refDesign.current.innerHTML = marked.parse(post?.design || "");
-    }
-    if (refScope.current) {
-      refScope.current.innerHTML = marked.parse(post?.scope || "");
-    }
-  }, [post?.code, "language-javascript", tabNo]);
+useEffect(() => {
+  marked.setOptions({ renderer });
 
+  if (tabNo === "design" && refDesign.current) {
+    refDesign.current.innerHTML = marked.parse(markdown);
+  }
+  if (tabNo === "scope" && refScope.current) {
+    refScope.current.innerHTML = marked.parse(markdown);
+  }
+}, [markdown, tabNo]);
+
+  useLayoutEffect(() => {
+    const raf = requestAnimationFrame(() => {
+      if (refCodeTitle.current) Prism.highlightElement(refCodeTitle.current);
+      if (tabNo === "code" && refCodeBody.current) Prism.highlightElement(refCodeBody.current);
+    });
+
+    return () => cancelAnimationFrame(raf);
+  }, [post?.code, tabNo]);
+
+  // callback for Tabs to pass current tab to parent
   function setTab(arg) {
     setTabNo(arg);
-    console.log(arg);
   }
 
   function toOpenCurl(code) {
@@ -101,9 +122,32 @@ export default function PostChallenge() {
       "let output = \"close enough\";",
       "let score = 100; // emotionally",
       "let isEven = Math.round(Math.random()) === 0;",
+      "let map = splines.reticulate();"
     ];
 
     return lets[Math.floor(Math.random() * lets.length)];
+  }
+
+  function extractHeadings(markdown) {
+    if(!markdown) return [];
+    const tokens = marked.lexer(markdown);
+    return tokens
+      .filter(t => t.type === "heading")
+      .map(t => ({
+        level: t.depth,
+        text: t.text,
+        id: slugify(t.text),
+      }));
+  }
+
+
+  function slugify(text) {
+    if (!text) return;
+    return text
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/\s+/g, "-");
   }
 
   if (loading) return <p>Loading…</p>;
@@ -113,25 +157,24 @@ export default function PostChallenge() {
   return (
     <div id="challenge-detail">
       <div className="snippet hero-img">
-        <pre><code ref={refCodeTitle} className="language-javascript">{toOpenCurl(post.code)}</code></pre>
+        <pre>
+          <code ref={refCodeTitle} className="language-javascript">{toOpenCurl(post.code)}</code>
+        </pre>
       </div>
 
       <Tabs defaultValue="scope" setTab={setTab}>
         <Tab value="scope" label="Scope">
           <div className="challenge-scope">
-            <h2>Scope</h2>
             <div ref={refScope}>{post.scope}</div>
           </div>
         </Tab>
         <Tab value="design" label="Design">
           <article className="challenge-design">
-            <h2>Design</h2>
             <div ref={refDesign}>{post.design}</div>
           </article>
         </Tab>
         <Tab value="code" label="Code">
           <div className="challenge-code">
-            <h2>Function</h2>
             <div className="snippet hero-img">
               <pre>
                 <code ref={refCodeBody} className="language-javascript">{post.code}</code>
@@ -141,11 +184,16 @@ export default function PostChallenge() {
         </Tab>
       </Tabs>
 
-
-
-      
-
-
+      <div className="challenge-rail">
+        <h2>Contents</h2>
+          <ul>
+            {Array.isArray(contents) && contents.map(h => (
+              <li key={h.id} className={`level-${h.level}`}>
+                <a href={`#${h.id}`}>{h.text}</a>
+              </li>
+            ))}
+          </ul>
+      </div>
     </div>
   );
 }
