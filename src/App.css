@@ -293,7 +293,8 @@ p, ul, li, ol {
   to { opacity: 1; }
 }
 
-#challenge-detail {
+#challenge-detail,
+#challenge-detail-mobile {
   display: grid; 
   width: 100%;
   height: max-content;
@@ -510,6 +511,17 @@ p, ul, li, ol {
       white-space: pre;
       display: block;
     }
+  }
+}
+
+#challenge-detail-mobile {
+  grid-template-areas:
+    "hero"
+    "tabs";
+  grid-template-columns: 1fr;
+
+  & [class*="challenge-rail"] {
+    display: none;
   }
 }
 

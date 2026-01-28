@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
+import { useIsMobile } from '../hooks/useIsMobile';
 import Prism from "prismjs";
 import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
 import "prismjs/themes/prism-funky.min.css";
@@ -13,6 +14,7 @@ import { Tabs, Tab } from "../components/Tabs";
 
 export default function PostChallenge() {
   const { slug } = useParams();
+  const { isMobile } = useIsMobile();
   const [post, setPost] = useState(null);
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(true);
@@ -226,7 +228,7 @@ export default function PostChallenge() {
   if (!post) return <p>Not found.</p>;
 
   return (
-    <div id="challenge-detail">
+    <div id={isMobile ? "challenge-detail-mobile" : "challenge-detail"}>
       <div className="snippet hero-img" style={{maxHeight: headHeight, minHeight: headHeight}}>
         {!codeView && <pre onAnimationStart={() => setHeight(refCodeTitle)}>
           <code ref={refCodeTitle} className="language-javascript">{headContent ?? toOpenCurl(post.code)}</code>
