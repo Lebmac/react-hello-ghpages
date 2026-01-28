@@ -494,6 +494,10 @@ p, ul, li, ol {
     }
   }
 
+  & strong {
+    font-weight: 700;
+  }
+
   & .code-block {
       font-size: larger;
       background-color: rgb(231, 231, 231);
