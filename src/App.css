@@ -33,6 +33,7 @@
 
 #canvas-mobile {
   min-height: 100%;
+  max-width: 100svw;
   box-sizing: border-box;
   display: grid;
   grid-template: auto 1fr auto / auto;
@@ -43,15 +44,30 @@
   gap: 1rem;
 }
 
-h1, h2 {
-  font-size: 1.8rem;
+h1{
+  width: max-content;
+  font-size: 2.2rem;
   font-weight: 200;
   line-height: 0.78;
   margin: 0;
 
   & span {
-    font-size: 2.2rem;
+    font-size: 1.8rem;
   }
+}
+
+@media (max-width: 1000px) {
+  .narrow {
+    width: min-content;
+  }
+}
+
+h2 {
+  width: max-content;
+  font-size: 1.8rem;
+  font-weight: 200;
+  line-height: 0.78;
+  margin: 0;
 }
 
 p, ul, li, ol {
@@ -181,7 +197,9 @@ p, ul, li, ol {
 #challenge {
   & .list {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    max-width: 100%;
+    flex-wrap: wrap;
     gap: 2rem;
     list-style: none;
     padding: 0;
@@ -190,6 +208,9 @@ p, ul, li, ol {
     & li {
       white-space: pre-line;
       position: relative;
+      flex-basis: 100px;
+      flex-shrink: 1;
+      flex-grow: 1;
 
       & .details {
         padding-left: 1rem;
@@ -247,6 +268,8 @@ p, ul, li, ol {
   background: #252c3d;
   background: linear-gradient(0deg, rgba(37, 44, 61, 1) 28%, rgba(3, 12, 15, 1) 99%);
   padding: 0;
+  transition: min-height 0.5s ease-in-out, max-height 0.5s ease-in-out;
+  overflow: hidden;
 
   & pre {
     margin: 0;
@@ -254,6 +277,7 @@ p, ul, li, ol {
     padding: 1rem;
     height: 100%;
     box-sizing: border-box;
+    animation: fade 0.8s ease;
   }
 
   & code {
@@ -264,18 +288,22 @@ p, ul, li, ol {
   }
 }
 
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 #challenge-detail {
   display: grid; 
   width: 100%;
   height: max-content;
   min-height: 100%;
   grid-template-areas:
-    "hero hero"
-    "tabs rail";
-  grid-template-columns: 1fr max-content;
+    "hero hero hero"
+    "tabs tabs rail";
+  grid-template-columns: 2fr 100px 1fr;
   grid-template-rows: min-content;
-  column-gap: 4svw;
-
+  column-gap: 1svw;
 
   & .hero-img {
     grid-area: 1 / 1 / 2 / -1;
@@ -351,7 +379,7 @@ p, ul, li, ol {
     margin-top: 0.75rem;
   }
 
-  & .challenge-rail {
+  & .challenge-rail-top {
     grid-area: rail;
     position: sticky;
     top: 1.5rem;
@@ -362,7 +390,7 @@ p, ul, li, ol {
     width: clamp(220px, 20svw, 300px);
     height: max-content;
     box-sizing: border-box;
-    margin: 2.5rem 0.1rem 0 0;
+    margin: 0;
     padding: 0 0.75rem;
 
     & h2 {
@@ -370,7 +398,43 @@ p, ul, li, ol {
     }
 
     & ol {
-      min-height: 160px;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    & .rail-controls {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+
+      & * {
+        flex: 1;
+        text-align: center;
+      }
+    }
+  }
+
+  & .challenge-rail-btm {
+    grid-area: rail;
+    align-self: flex-end;
+    position: sticky;
+    bottom: 5svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    height: max-content;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0.75rem 0.75rem 0 0.75rem;
+    background-color: white;
+
+    & h2 {
+      align-self: flex-start;
+    }
+
+    & ol {
       width: 100%;
       margin-bottom: 1rem;
     }
@@ -407,6 +471,13 @@ p, ul, li, ol {
       margin: 0;
       padding: 0;
     }
+  }
+
+  & .tabs .snippet>* {
+    padding: min(1rem, calc(1.5svw - 5px));
+    overflow-x: hidden;
+    width: 100%;
+    font-size: clamp(0.6pt, calc(1.5svw - 5px), 1em);
   }
 
   & table {
@@ -706,6 +777,22 @@ p, ul, li, ol {
     }
   }
 }
+
+div[id*=panel-] {
+  width: 100%;
+}
+
+/* #panel-code {
+  --bg: rgb(76, 76, 76);
+  background-color: none;
+  box-shadow: none;
+
+  & code[class*=language-],
+    .token {
+    background-color: var(--bg);
+    box-shadow: 0.3em 0 0 .3em var(--bg);
+  }
+} */
 
 #foot {
   grid-area: foot;

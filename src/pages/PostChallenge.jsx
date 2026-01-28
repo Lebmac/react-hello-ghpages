@@ -18,6 +18,9 @@ export default function PostChallenge() {
   const [loading, setLoading] = useState(true);
   const [prevPost, setPrev] = useState(null);
   const [nextPost, setNext] = useState(null);
+  const [codeView, setCodeView] = useState(false);
+  const [headHeight, setHeadHeight] = useState(null);
+  const [headContent, setHeadContent] = useState(null);
   const [tabNo, setTabNo] = useState("scope");
   const refCodeTitle = useRef(null);
   const refCodeBody = useRef(null);
@@ -93,25 +96,39 @@ export default function PostChallenge() {
 
   // set next and previous links
   useEffect(() => {
-    console.log("getting");
     getNeighbouringPosts();
   },[post])
 
   // callback for Tabs to pass current tab to parent
   function setTab(arg) {
     setTabNo(arg);
+    if (arg === "code") { 
+      setCodeView(true);
+    } else {
+      setCodeView(false);
+    }
   }
+
+  function setHeight(ref) {
+    setHeadHeight(ref.current.getBoundingClientRect().height + 40);
+    console.log(ref.current.getBoundingClientRect().height + 40);
+  }
+
+  
 
   // Writes pseudo code for hero content
   function toOpenCurl(code) {
     const curl = code.indexOf("{") + 1;
-    return code.slice(0, curl).trim() + 
+    const head = code.slice(0, curl).trim() + 
       `
     //-- PROVIDER:  freeCodeCamp(🔥) daily_coding_challenge   
     //-- HEADER:    ${post.title}
     //-- DEPLOYED:  ${post.published_at}
     //-- AUTHOR:    ${post.author_id?.display_name}\n
     ${post?.slang || randomLet()}\n}`;
+
+    setHeadContent(head);
+    return head;
   }
 
   // Get random "let something = something funny" for hero content
@@ -193,10 +210,13 @@ export default function PostChallenge() {
 
   return (
     <div id="challenge-detail">
-      <div className="snippet hero-img">
-        <pre>
-          <code ref={refCodeTitle} className="language-javascript">{toOpenCurl(post.code)}</code>
-        </pre>
+      <div className="snippet hero-img" style={{maxHeight: headHeight, minHeight: headHeight}}>
+        {!codeView && <pre onAnimationStart={() => setHeight(refCodeTitle)}>
+          <code ref={refCodeTitle} className="language-javascript">{headContent ?? toOpenCurl(post.code)}</code>
+        </pre> }
+        {codeView && <pre onAnimationStart={() => setHeight(refCodeBody)}>
+          <code ref={refCodeBody} className="language-javascript">{post.code}</code>
+        </pre>}
       </div>
 
       <Tabs defaultValue="scope" setTab={setTab}>
@@ -205,32 +225,31 @@ export default function PostChallenge() {
             <div ref={refScope}>{post.scope}</div>
           </div>
         </Tab>
+
         <Tab value="design" label="Design">
           <div className="challenge-design">
             <h2>Design Approach</h2>
             <div ref={refDesign}>{post.design}</div>
           </div>
         </Tab>
+
         <Tab value="code" label="Code">
-          <div className="challenge-code">
-            <div className="snippet">
-              <pre>
-                <code ref={refCodeBody} className="language-javascript">{post.code}</code>
-              </pre>
-            </div>
-          </div>
+          <h2>The Final Commit</h2>
         </Tab>
       </Tabs>
 
-      <div className="challenge-rail">
-        <h2>Contents</h2>
+      <div className="challenge-rail-top">
+        {!codeView && <h2>This Page</h2>}
         {(contents?.length > 0 && <ol>
           {Array.isArray(contents) && contents.map(h => (
             <li key={h.id} className={`level-${h.level}`}>
               <a href={`#${h.id}`}>{h.text}</a>
             </li>
           ))}
-        </ol>) || <ol>empty</ol> }
+        </ol>) || !codeView && <ol>empty</ol> }
+      </div>
+
+      <div className="challenge-rail-btm">
         <p>See more posts</p>
         <div className="rail-controls">
           {prevPost && (<Link to={`/challenge/${prevPost?.slug}`}>
@@ -247,16 +266,3 @@ export default function PostChallenge() {
     </div>
   );
 }
-
-
-/*     <main>
-      <p><Link to="/challenge">← Back</Link></p>
-      <h1>{post.title}</h1>
-      <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 16 }}>
-        {post.published_at ? new Date(post.published_at).toLocaleString() : ""}
-      </div>
-
-      <article style={{ whiteSpace: "pre-wrap", lineHeight: 1.5 }}>
-        {post.code}
-      </article>
-    </main> */

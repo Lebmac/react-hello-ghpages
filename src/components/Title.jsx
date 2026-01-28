@@ -11,7 +11,7 @@ export default function Title() {
       return (
         <div id="title">
           <Logo />
-          <h1><span>C</span>AMPBELL <span>J</span>AMIESON</h1>
+          <h1 className="narrow">C<span >AMPBELL </span>J<span>AMIESON</span></h1>
         </div>
       );
     }
