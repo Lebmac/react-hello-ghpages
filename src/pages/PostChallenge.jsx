@@ -34,6 +34,10 @@ export default function PostChallenge() {
     return `<h${text.depth} id="${id}">${text.text}</h${text.depth}>`;
   };
 
+  renderer.code = function (text) {
+    return `<div class="code-block"><code>${text.text}</code></div>`;
+  }
+
   const markdown = useMemo(() => {
     if (!post) return "";
     if (tabNo === "design") return post.design || "";

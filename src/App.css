@@ -481,19 +481,33 @@ p, ul, li, ol {
   }
 
   & table {
-    width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
-    margin-bottom: 0.5rem;
+    margin: 0.5rem 2rem;
     font-weight: 200;
 
     & th, td {
       border: 1px solid black;
-      padding: 6px;
+      padding: 4px 10px;
       text-align: center;
       word-wrap: break-word;
     }
   }
+
+  & .code-block {
+      font-size: larger;
+      background-color: rgb(231, 231, 231);
+      border-radius: 10px;
+      border: 1px solid lightgray;
+      padding: 6px;
+      margin-bottom: 10px;
+
+      & code {
+          white-space: pre;
+          display: block;
+        }
+      }
+    }
 }
 
 .glass {
