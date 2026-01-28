@@ -34,10 +34,12 @@ export default function PostChallenge() {
     return `<h${text.depth} id="${id}">${text.text}</h${text.depth}>`;
   };
 
+  // add div for background colour styling on code blocks
   renderer.code = function (text) {
     return `<div class="code-block"><code>${text.text}</code></div>`;
   }
 
+  // design and scope body content stored for marked parsing
   const markdown = useMemo(() => {
     if (!post) return "";
     if (tabNo === "design") return post.design || "";
@@ -45,6 +47,7 @@ export default function PostChallenge() {
     return "";
   }, [post?.scope, tabNo]);
 
+  // parsed marked content
   const contents = useMemo(() => extractHeadings(markdown), [markdown]);
 
   // select blog post from supabase table
@@ -113,12 +116,18 @@ export default function PostChallenge() {
     }
   }
 
-  function setHeight(ref) {
-    setHeadHeight(ref.current.getBoundingClientRect().height + 40);
-    console.log(ref.current.getBoundingClientRect().height + 40);
+  // reset page when next or prev link is selected
+  function resetPage() {
+    setTabNo("scope");
+    setCodeView(false);
+    setHeadContent(null);
+    console.log("reset");
   }
 
-  
+  // Get height of the hero code block for height animations
+  function setHeight(ref) {
+    setHeadHeight(ref.current.getBoundingClientRect().height + 40);
+  }
 
   // Writes pseudo code for hero content
   function toOpenCurl(code) {
@@ -132,6 +141,7 @@ export default function PostChallenge() {
     ${post?.slang || randomLet()}\n}`;
 
     setHeadContent(head);
+    console.log("head reset");
     return head;
   }
 
@@ -185,6 +195,9 @@ export default function PostChallenge() {
       .replace(/\s+/g, "-");
   }
 
+  // setup navigation links, get next and prev post slug.
+  // Nice to have, tool tip to say post name when hovering over link.
+  // do later.
   async function getNeighbouringPosts() {
     const { data: next } = await supabase
       .from("challenge")
@@ -256,13 +269,13 @@ export default function PostChallenge() {
       <div className="challenge-rail-btm">
         <p>See more posts</p>
         <div className="rail-controls">
-          {prevPost && (<Link to={`/challenge/${prevPost?.slug}`}>
+          {prevPost && (<Link to={`/challenge/${prevPost?.slug}`} onClick={resetPage}>
             <p>← prev</p>
           </Link>) || <p>⨯ prev</p>}
           <Link to="/challenge">
             <p>main</p>
           </Link>
-          {nextPost && (<Link to={`/challenge/${nextPost?.slug}`}>
+          {nextPost && (<Link to={`/challenge/${nextPost?.slug}`} onClick={resetPage}>
             <p>next →</p>
           </Link>) || <p>next ⨯</p>}
         </div>
