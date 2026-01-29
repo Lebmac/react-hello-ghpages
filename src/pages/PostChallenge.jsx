@@ -265,7 +265,7 @@ export default function PostChallenge() {
         {(contents?.length > 0 && <ol>
           {Array.isArray(contents) && contents.map(h => (
             <li key={h.id} className={`level-${h.level}`}>
-              <Link state={{ scrollTo: h.id }}>{h.text}</Link>
+              <Link to={`/challenge/${slug}`} state={{ scrollTo: h.id }}>{h.text}</Link>
             </li>
           ))}
         </ol>) || !codeView && <ol>empty</ol> }
