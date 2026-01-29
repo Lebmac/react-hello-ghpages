@@ -124,7 +124,6 @@ export default function PostChallenge() {
     setTabNo("scope");
     setCodeView(false);
     setHeadContent(null);
-    console.log("reset");
   }
 
   // Get height of the hero code block for height animations
@@ -144,7 +143,6 @@ export default function PostChallenge() {
     ${post?.slang || randomLet()}\n}`;
 
     setHeadContent(head);
-    console.log("head reset");
     return head;
   }
 

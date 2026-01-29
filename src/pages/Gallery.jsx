@@ -106,7 +106,6 @@ export default function Gallery({columns = 3}) {
       return nextCols;
     });
 
-    console.log(colShort, imageObj.name);
     setSeqStepN(3);
   }, [seqStepN, colShort]);
 

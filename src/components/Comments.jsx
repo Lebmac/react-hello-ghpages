@@ -31,7 +31,6 @@ export default function Comments({postId}) {
       else {
         setComments(data);
       }  
-      console.log(comments);
       setLoading(false);
     }
 
@@ -104,7 +103,6 @@ export default function Comments({postId}) {
           Title
           <input
             value={title}
-            defaultValue="Title"
             onChange={(e) => {
               setTitle(e.target.value);
             }}
