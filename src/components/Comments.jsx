@@ -11,6 +11,10 @@ export default function Comments({postId}) {
   const [name, setName] = useState("");
   const [editVsbl, setEditVsbl] = useState(true);
 
+  const validateEmail = (value) => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(value);
+  };
 
   // get blog comments from supabase
   useEffect(() => {
@@ -47,7 +51,8 @@ export default function Comments({postId}) {
     const trimName = name.trim();
 
     if (!trimBody) return setErr("Comment is required.");
-    if (!trimName) return setErr("Name is required.");
+    if (!trimName) return setErr("Email is required.");
+    if (!validateEmail(trimName)) return setErr("Invalid email address entered.");
 
     const payload = {
       challenge_id: postId, 

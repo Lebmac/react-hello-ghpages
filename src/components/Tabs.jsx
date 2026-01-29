@@ -1,7 +1,7 @@
 import React, { useId, useMemo, useState } from "react";
 import { useIsMobile } from '../hooks/useIsMobile';
 
-/**
+/*
  * Usage:
  * <Tabs defaultValue="profile">
  *   <Tab value="profile" label="Profile">...</Tab>
