@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import CardChallenge from "../components/CardChallenge.jsx";
+import Hero from "../components/Hero.jsx";
 
 export default function Challenge() {
   const [cards, setCards] = useState([]);
@@ -38,16 +38,24 @@ export default function Challenge() {
   if (error) return <p style={{ color: "crimson" }}>Error: {error}</p>;
 
   return (
-    <div id="challenge">
-      {cards.length < 1 ? (
-        <p>No published posts yet.</p>
-      ) : (
-        <ul className="list">
-          {cards.map((card, i) => (
-            <CardChallenge key={i} data={card} />
-          ))}
-        </ul>
-      )}
-    </div>
+    <>
+      <Hero 
+        title="Daily Code Challenges"
+        description={[
+          `These posts document my approach to daily coding challenges. They capture how I interpret a problem and reason my way to a solution, then reflect on its application to real-world contexts.`,
+          `Browse the entries below.`]}
+      />
+      <div id="challenge">
+        {cards.length < 1 ? (
+          <p>No published posts yet.</p>
+        ) : (
+          <ul className="list">
+            {cards.map((card, i) => (
+              <CardChallenge key={i} data={card} />
+            ))}
+          </ul>
+        )}
+      </div>
+    </>
   );
 }

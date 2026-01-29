@@ -1,10 +1,8 @@
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Canvas from "./components/Canvas.jsx";
 import Gallery from "./pages/Gallery.jsx";
 import Challenge from "./pages/Challenge.jsx";
 import PostChallenge from "./pages/PostChallenge.jsx";
-import BlogIndex from "./pages/BlogIndex.jsx";
-import BlogPost from "./pages/BlogPost.jsx";
 import Admin from "./pages/Admin.jsx";
 import Title from "./components/Title.jsx";
 import Nav from "./components/Nav.jsx"
