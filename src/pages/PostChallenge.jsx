@@ -10,6 +10,7 @@ import "prismjs/components/prism-jsx";
 import "prismjs/components/prism-css";
 import "prismjs/components/prism-json";
 import { Tabs, Tab } from "../components/Tabs"; 
+import Comments from "../components/Comments"
 
 
 export default function PostChallenge() {
@@ -254,6 +255,8 @@ export default function PostChallenge() {
 
         <Tab value="code" label="Code">
           <h2>The Final Commit</h2>
+          <p>See a better solution? Join the discussion below.</p>
+          <Comments postId={post.id}></Comments>
         </Tab>
       </Tabs>
 

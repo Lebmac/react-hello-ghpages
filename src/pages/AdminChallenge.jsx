@@ -16,10 +16,11 @@ export default function AdminChallenge() {
 
   // posts
   const [posts, setPosts] = useState([]);
+  const [comments, setComments] = useState([]);
   const [activeId, setActiveId] = useState(null);
 
   // editor
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(0);
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
   const [source, setSource] = useState("");
@@ -33,7 +34,7 @@ export default function AdminChallenge() {
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
   const [loadingPosts, setLoadingPosts] = useState(false);
-
+  const [loadingComments, setLoadingComments] = useState(false);
   const isEditing = useMemo(() => Boolean(activeId), [activeId]);
 
 
@@ -58,6 +59,28 @@ export default function AdminChallenge() {
     setLoadingPosts(false);
   }
 
+  async function loadComments() {
+    if (visible === 2) {
+      setVisible(0);
+      return;
+    }
+    setVisible(2);
+    setLoadingComments(true);
+    setErr("");
+    setMsg("");
+
+    const { data, error } = await supabase
+      .from("blog_comments")
+      .select()
+      .eq("approved", false)
+      .order("created_at", { ascending: false });
+
+    if (error) setErr(error.message);
+    else setComments(data ?? []);
+
+    setLoadingComments(false);
+  }
+
   function resetEditor() {
     setActiveId(null);
     setTitle("");
@@ -73,7 +96,7 @@ export default function AdminChallenge() {
   function startNew() {
     resetEditor();
     setMsg("New post");
-    setVisible(true);
+    setVisible(1);
   }
 
   function startEdit(post) {
@@ -82,7 +105,7 @@ export default function AdminChallenge() {
     setSlug(post.slug ?? "");
     setPublished(Boolean(post.published));
     fetchContent(post.id);
-    setVisible(true);
+    setVisible(1);
   }
 
   async function fetchContent(id) {
@@ -139,7 +162,7 @@ export default function AdminChallenge() {
 
     await loadPosts();
     resetEditor();
-    setVisible(false);
+    setVisible(0);
   }
 
   async function deletePost(id) {
@@ -174,16 +197,53 @@ export default function AdminChallenge() {
     await loadPosts();
   }
 
- return (
+  async function approveComment(id) {
+    console.log(id);
+    setErr("");
+    setMsg("");
+
+    const { error } = await supabase
+      .from("blog_comments")
+      .update({ approved: true })
+      .eq("uuid", id);
+
+    if (error) return setErr(error.message);
+
+    setComments(prev =>
+      prev.map(c =>
+        c.uuid === id ? { ...c, approved: true } : c
+      )
+    );
+  }
+
+  async function deleteComment(id) {
+    if (!confirm("Delete this post?")) return;
+    setErr("");
+    setMsg("");
+
+    const { error } = await supabase
+      .from("blog_comments")
+      .delete()
+      .eq("uuid", id);
+    if (error) return setErr(error.message);
+
+    setMsg("Deleted.");
+
+    setComments(prev => prev.filter(c => c.uuid !== id));
+  }
+
+
+  return (
     <>
       <div className="controls">
         {err && <p className="msg" style={{ color: "red" }}>Error: {err}</p>}
         <button className="newbtn" onClick={startNew}>＋</button>
+        <button className="mailbtn" onClick={loadComments} disabled={loadingComments}>✉</button>
         <button className="refreshbtn" onClick={loadPosts} disabled={loadingPosts}>↺</button>
       </div>
 
       {/* list all challenge posts */}
-      {visible || (
+      {visible===0 && (
       <ul className="challenge-list">
         {posts.map((p) => (
           <li key={p.id}>
@@ -203,7 +263,7 @@ export default function AdminChallenge() {
       )}
 
       {/* display editor */}
-      {visible && (
+      {visible===1 && (
       <div className="editor">
         <h2>{isEditing ? "Edit post" : "New post"}</h2>
 
@@ -275,9 +335,29 @@ export default function AdminChallenge() {
 
         <div className="editor-controls">
           <button onClick={savePost}>{isEditing ? "Save" : "Create"}</button>
-          <button onClick={() => {resetEditor(); setVisible(false);}} type="button">Cancel</button>
+          <button onClick={() => {resetEditor(); setVisible(0);}} type="button">Cancel</button>
         </div>
       </div>
+      )}
+
+      {visible===2 && (
+      <ul className="challenge-list">
+        {comments.map((c) => (
+          <li key={c.id}>
+            <h3 className="title">{c.title}</h3>
+            <p>{c.content}</p>
+            <div className="controls">
+              <button onClick={() => approveComment(c.uuid)} style={c.approved ? { backgroundColor: "lightgreen", borderColor:"lightgreen" } : {}}>✓</button>
+              <button onClick={() => deleteComment(c.uuid)} className="danger">🗑</button>
+            </div>
+            <div style={{ fontSize: 12, opacity: 0.7 }}>
+              Author {c.name} — created{" "}
+              {c.created_at ? new Date(c.created_at).toLocaleString() : ""} — {" "}
+              {c.approved ? "Approved" : "Pending Approval"}
+            </div>
+          </li>
+        ))}
+      </ul>
       )}
     </>
   );
