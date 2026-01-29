@@ -76,7 +76,6 @@ export default function Comments({postId}) {
   return (
     <>
       <ul id="comment-list">
-        <hr />
         {comments && comments.map((c) => (
           <>
           <li key={c.id}>
@@ -85,7 +84,6 @@ export default function Comments({postId}) {
             <p className="meta">By: {c.name}</p>
             <p className="meta">Date: {new Date(c.created_at).toLocaleString()}</p>
           </li>
-          <hr />
           </>
         ))}
       </ul>
@@ -121,7 +119,7 @@ export default function Comments({postId}) {
             rows={4}
           />
         </label>
-        <span style={{textAlign:"right"}}>Character limit: {body.length} / 400</span>
+        <span style={{textAlign:"right"}}>Character limit: {body.length} / 60-400</span>
 
         <div className="editor-controls">
           <button onClick={saveComment}>Submit</button>

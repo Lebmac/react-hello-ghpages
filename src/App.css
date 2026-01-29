@@ -1,5 +1,5 @@
 #root {
-  width: 100vw;
+  width: 100%;
   min-height: 100%;
   margin: 0;
 }
@@ -45,7 +45,7 @@
 }
 
 h1{
-  width: max-content;
+  width: 100%;
   font-size: 2.2rem;
   font-weight: 200;
   line-height: 0.78;
@@ -63,7 +63,7 @@ h1{
 }
 
 h2 {
-  width: max-content;
+  width: 100%;
   font-size: 1.8rem;
   font-weight: 200;
   line-height: 0.78;
@@ -618,7 +618,7 @@ p, ul, li, ol {
   grid-template-areas:
     "title   session" 
     "content content";
-  grid-template-columns: auto max-content;
+  grid-template-columns: 1fr auto;
   grid-template-rows: min-content 1fr;
   gap: 1rem;
 
@@ -693,7 +693,8 @@ p, ul, li, ol {
   } 
 }
 
-#panel-challenge {
+#panel-challenge,
+#mobile-panel-challenge {
   height: 100%;
   width: 100%;
   display: flex;
@@ -704,7 +705,7 @@ p, ul, li, ol {
     display: grid;
     grid-template-areas:
     "message newbtn mailbtn refreshbtn";
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: 1fr auto auto auto;
     gap: 0.5rem;
     align-items: center;
     height: min-content;
@@ -744,9 +745,11 @@ p, ul, li, ol {
     list-style: none;
     padding: 0;
     margin: 0;
+    width: 100%;
   }
 
   & li {
+    box-sizing: border-box;
     background-color: white;
     filter: drop-shadow(0px 0px 3px rgba(0,0,0,0.5));
     padding: 1rem;
@@ -754,14 +757,30 @@ p, ul, li, ol {
     display: grid;
     grid-template-areas:
     "title controls"
+    "message controls"
     "details controls";
     grid-template-columns: 1fr min-content;
+    grid-template-rows: 1fr max-content min-content;
+
+    & * {
+      min-width: 0;
+    }
 
     & .title {
       grid-area: title;
       font-weight: 500;
       font-size: 1.2rem;
       margin: 0;
+    }
+
+    & .body {
+      height: max-content;
+      grid-area: message;
+      margin: 0.5rem 0 0;
+      white-space: pre-line;
+      overflow-wrap: normal;
+      word-break: break-all;
+      float: left;
     }
 
     & .tooltiptext {
@@ -835,6 +854,12 @@ div[id*=panel-] {
   width: 100%;
 }
 
+div[id*=mobile-panel-] {
+  width: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
 ul#comment-list {
   list-style: none;
   margin: 2rem 0;;
@@ -859,6 +884,8 @@ ul#comment-list {
   & li {
     padding: 1rem 1rem;
     margin: 0 0 0.5rem 0;
+    background-color: white;
+    filter: drop-shadow(0px 0px 3px rgba(0,0,0,0.5));
   }
 }
 

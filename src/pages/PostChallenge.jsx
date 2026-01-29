@@ -243,6 +243,8 @@ export default function PostChallenge() {
         <Tab value="scope" label="Scope">
           <div className="challenge-scope">
             <div ref={refScope}>{post.scope}</div>
+            <h2>Source</h2>
+            <a href={post.source}>{post.source}</a>
           </div>
         </Tab>
 

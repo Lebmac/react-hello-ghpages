@@ -250,8 +250,8 @@ export default function AdminChallenge() {
             <h3 className="title">{p.title}</h3>
             <div className="controls">
               <button onClick={() => startEdit(p)}>✎<span className="tooltiptext">Some tooltip text</span></button>
-              <button onClick={() => togglePublished(p)}>{p.published ? "⇏" : "⇒"}<span className="tooltiptext">Some tooltip text</span></button>
-              <button onClick={() => deletePost(p.id)} className="danger">🗑<span className="tooltiptext">Some tooltip text</span></button>
+              <button onClick={() => togglePublished(p)}>{p.published ? "⇏" : "⇒"}</button>
+              <button onClick={() => deletePost(p.id)} className="danger">🗑</button>
             </div>
             <div style={{ fontSize: 12, opacity: 0.7 }}>
               /challenge/{p.slug} — {p.published ? "Published" : "Draft"} — updated{" "}
@@ -345,12 +345,12 @@ export default function AdminChallenge() {
         {comments.map((c) => (
           <li key={c.id}>
             <h3 className="title">{c.title}</h3>
-            <p>{c.content}</p>
+            <p className="body">{c.content}</p>
             <div className="controls">
               <button onClick={() => approveComment(c.uuid)} style={c.approved ? { backgroundColor: "lightgreen", borderColor:"lightgreen" } : {}}>✓</button>
               <button onClick={() => deleteComment(c.uuid)} className="danger">🗑</button>
             </div>
-            <div style={{ fontSize: 12, opacity: 0.7 }}>
+            <div className="details" style={{ fontSize: 12, opacity: 0.7 }}>
               Author {c.name} — created{" "}
               {c.created_at ? new Date(c.created_at).toLocaleString() : ""} — {" "}
               {c.approved ? "Approved" : "Pending Approval"}

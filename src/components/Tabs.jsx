@@ -1,4 +1,5 @@
 import React, { useId, useMemo, useState } from "react";
+import { useIsMobile } from '../hooks/useIsMobile';
 
 /**
  * Usage:
@@ -10,6 +11,7 @@ import React, { useId, useMemo, useState } from "react";
  */
 
 export function Tabs({ children, defaultValue, setTab }) {
+  const { isMobile } = useIsMobile();
   const tabs = React.Children.toArray(children).filter(Boolean);
   const [tabValue, setTabValue] = useState(defaultValue ?? tabs[0].props.value);
   const activeTab = tabs.find((t) => t.props.value === tabValue);
@@ -46,7 +48,7 @@ export function Tabs({ children, defaultValue, setTab }) {
 
       {activeTab && (
         <div
-          id={`panel-${tabValue}`}
+          id={isMobile ? `mobile-panel-${tabValue}` : `panel-${tabValue}`}
           role="tabpanel"
           aria-labelledby={`tab-${tabValue}`}
           tabIndex={0}
