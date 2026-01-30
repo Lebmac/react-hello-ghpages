@@ -171,6 +171,10 @@ p, ul, li, ol {
   height: 100%;
 }
 
+#page>* {
+  animation: fade 1s ease;
+}
+
 .loader {
   display: flex;
   flex-direction: column;
@@ -196,6 +200,7 @@ p, ul, li, ol {
   & .item {
     break-inside: avoid;
     width: 100%;
+    animation: fade 1s ease;
   }
 
   & .item img {
