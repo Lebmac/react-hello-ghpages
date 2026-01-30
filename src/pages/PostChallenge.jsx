@@ -11,6 +11,7 @@ import "prismjs/components/prism-css";
 import "prismjs/components/prism-json";
 import { Tabs, Tab } from "../components/Tabs"; 
 import Comments from "../components/Comments"
+import Loader from "../components/Loader";
 
 
 export default function PostChallenge() {
@@ -222,7 +223,7 @@ export default function PostChallenge() {
     setPrev(prev);
   }
 
-  if (loading) return <p>Loading…</p>;
+  if (loading) return <Loader />;
   if (err) return <p style={{ color: "crimson" }}>Error: {err}</p>;
   if (!post) return <p>Not found.</p>;
 

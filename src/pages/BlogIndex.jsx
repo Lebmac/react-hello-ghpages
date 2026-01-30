@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
+import Loader from "../components/Loader";
 
 export default function BlogIndex() {
   const [posts, setPosts] = useState([]);
@@ -32,7 +33,7 @@ export default function BlogIndex() {
     return () => { cancelled = true; };
   }, []);
 
-  if (loading) return <p>Loading…</p>;
+  if (loading) return <Loader />;
   if (err) return <p style={{ color: "crimson" }}>Error: {err}</p>;
 
   return (

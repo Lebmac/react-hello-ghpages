@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "../supabaseClient";
+import Loader from "../components/Loader";
 
 export default function Comments({postId}) {
   const [loading, setLoading] = useState(null);
@@ -75,7 +76,7 @@ export default function Comments({postId}) {
     setName("");
   }
 
-  if (loading) return <p>Loading comments.</p>
+  if (loading) return <Loader />
 
   return (
     <>

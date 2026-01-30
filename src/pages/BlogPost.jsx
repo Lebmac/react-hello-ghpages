@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
+import Loader from "../components/Loader";
 
 export default function BlogPost() {
   const { slug } = useParams();
@@ -34,7 +35,7 @@ export default function BlogPost() {
     return () => { cancelled = true; };
   }, [slug]);
 
-  if (loading) return <p>Loading…</p>;
+  if (loading) return <Loader />;
   if (err) return <p style={{ color: "crimson" }}>Error: {err}</p>;
   if (!post) return <p>Not found.</p>;
 

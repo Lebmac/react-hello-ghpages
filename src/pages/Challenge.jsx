@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import CardChallenge from "../components/CardChallenge.jsx";
 import Hero from "../components/Hero.jsx";
+import Loader from "../components/Loader.jsx";
 
 export default function Challenge() {
   const [cards, setCards] = useState([]);
@@ -34,7 +35,7 @@ export default function Challenge() {
     return () => { cancelled = true; };
   }, []);
 
-  if (loading) return <p>Loading…</p>;
+  if (loading) return <Loader />;
   if (error) return <p style={{ color: "crimson" }}>Error: {error}</p>;
 
   return (
