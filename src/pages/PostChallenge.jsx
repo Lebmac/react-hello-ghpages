@@ -24,12 +24,13 @@ export default function PostChallenge() {
   const [nextPost, setNext] = useState(null);
   const [codeView, setCodeView] = useState(false);
   const [headHeight, setHeadHeight] = useState(null);
-  const [headContent, setHeadContent] = useState(null);
   const [tabNo, setTabNo] = useState("scope");
   const refCodeTitle = useRef(null);
   const refCodeBody = useRef(null);
   const refDesign = useRef(null);
   const refScope = useRef(null);
+  const heroLetRef = useRef("");
+  const heroLetPostIdRef = useRef(null);
   const renderer = new marked.Renderer();
 
   // define headers with id for markdown rendering
@@ -53,6 +54,42 @@ export default function PostChallenge() {
 
   // parsed marked content
   const contents = useMemo(() => extractHeadings(markdown), [markdown]);
+
+  const heroContent = useMemo(() => {
+    if (!post?.code) return "";
+
+    if (heroLetPostIdRef.current !== post.id) {
+      heroLetPostIdRef.current = post.id;
+      heroLetRef.current = post.slang || randomLet();
+    }
+
+    const curl = post.code.indexOf("{") + 1;
+
+    return (
+      post.code.slice(0, curl).trim() +
+      `
+      //-- PROVIDER:  freeCodeCamp(🔥) daily_coding_challenge
+      //-- HEADER:    ${post.title}
+      //-- DEPLOYED:  ${post.published_at}
+      //-- AUTHOR:    ${post.author_id?.display_name}
+
+      ${heroLetRef.current}
+  }`
+    );
+  }, [
+    post?.id,
+    post?.code,
+    post?.title,
+    post?.published_at,
+    post?.author_id?.display_name,
+    post?.slang
+  ]);
+
+  useEffect(() => {
+    setTabNo("scope");
+    setCodeView(false);
+    setHeadHeight(null);
+  }, [slug]);
 
   // select blog post from supabase table
   useEffect(() => {
@@ -124,27 +161,11 @@ export default function PostChallenge() {
   function resetPage() {
     setTabNo("scope");
     setCodeView(false);
-    setHeadContent(null);
   }
 
   // Get height of the hero code block for height animations
   function setHeight(ref) {
     setHeadHeight(ref.current.getBoundingClientRect().height + 40);
-  }
-
-  // Writes pseudo code for hero content
-  function toOpenCurl(code) {
-    const curl = code.indexOf("{") + 1;
-    const head = code.slice(0, curl).trim() + 
-      `
-    //-- PROVIDER:  freeCodeCamp(🔥) daily_coding_challenge   
-    //-- HEADER:    ${post.title}
-    //-- DEPLOYED:  ${post.published_at}
-    //-- AUTHOR:    ${post.author_id?.display_name}\n
-    ${post?.slang || randomLet()}\n}`;
-
-    setHeadContent(head);
-    return head;
   }
 
   // Get random "let something = something funny" for hero content
@@ -231,7 +252,9 @@ export default function PostChallenge() {
     <div id={isMobile ? "challenge-detail-mobile" : "challenge-detail"}>
       <div className="snippet hero-img" style={{maxHeight: headHeight, minHeight: headHeight}}>
         {!codeView && <pre onAnimationStart={() => setHeight(refCodeTitle)}>
-          <code ref={refCodeTitle} className="language-javascript">{headContent ?? toOpenCurl(post.code)}</code>
+          <code ref={refCodeTitle} className="language-javascript">
+            {heroContent}
+          </code>
         </pre> }
         {codeView && <pre onAnimationStart={() => setHeight(refCodeBody)}>
           <code ref={refCodeBody} className="language-javascript">{post.code}</code>
